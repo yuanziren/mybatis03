@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuanziren.mapper.UserMapper">
+
+    <!--<cache/>-->
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+    <resultMap id="user_card" type="userDto">
+
+        <id column="id" property="id"></id>
+        <result column="user_name" property="userName"></result>
+        <result column="user_pwd" property="userPwd"></result>
+        <result column="real_name" property="realName"></result>
+        <result column="card_id" property="cardId"></result>
+
+        <association property="card" javaType="card">
+            <id column="cid" property="id"></id>
+            <result column="card_num" property="cardNum"></result>
+        </association>
+    </resultMap>
+
+    <!-- 1 vs 1 -->
+    <select id="queryUserCard" resultMap="user_card">
+        SELECT u.id, u.user_name, u.user_pwd, u.real_name, u.nation,
+        u.card_id, c.id as cid, c.card_num
+        FROM `user` AS u LEFT JOIN card AS c ON c.id = u.card_id
+    </select>
+
+    <resultMap id="user_card_account" type="userDto" extends="user_card">
+        <collection property="accounts" ofType="account">
+            <id column="aid" property="id"></id>
+            <result column="aname" property="aname"></result>
+            <result column="type" property="type"></result>
+        </collection>
+    </resultMap>
+
+
+    <!-- 1 vs 多 -->
+    <select useCache="false" id="queryUserCardAccount" resultMap="user_card_account">
+        SELECT
+        u.id,
+        u.user_name,
+        u.user_pwd,
+        u.real_name,
+        u.nation,
+        u.card_id,
+        c.id AS cid,
+        c.card_num,
+        a.id,
+        a.aname,
+        a.type,
+        a.money,
+        a.user_id,
+        a.create_time,
+        a.update_time,
+        a.remark,
+        a.id AS aid,
+        a.aname,
+        a.type,
+        a.money,
+        a.user_id,
+        a.create_time,
+        a.update_time,
+        a.remark,
+        u.id
+        FROM
+        `user` AS u
+        INNER JOIN card AS c ON c.id = u.card_id
+        INNER JOIN account AS a ON a.user_id = u.id
+    </select>
+
+    <update id="updateUser" parameterType="int">
+        UPDATE user set user_pwd='8888' WHERE id=#{id}
+    </update>
+
+
+    
+</mapper>

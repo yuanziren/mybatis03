@@ -1,0 +1,14 @@
+一、映射关系
+    一对一:association
+    一对多:collection
+二、缓存
+    一级缓存:默认开启
+    二级缓存：开启需要两步
+        在mybatis.xml中
+            <settings>
+                    <!-- 使用二级缓存 -->
+                    <setting name="cacheEnabled" value="true"/>
+            </settings>
+        在指定的mapper.xml中开启缓存
+            <cache/>
+    分布式缓存
